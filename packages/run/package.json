@@ -49,10 +49,14 @@
     "run"
   ],
   "peerDependencies": {
+    "chalk": "^4.0.0",
     "rollup": "^2.0.0||^3.0.0"
   },
   "peerDependenciesMeta": {
     "rollup": {
+      "optional": true
+    },
+    "chalk": {
       "optional": true
     }
   },
@@ -61,6 +65,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^9.0.1",
+    "chalk": "^4.0.0",
     "del": "^6.1.1",
     "rollup": "^3.2.3",
     "sinon": "^14.0.0",

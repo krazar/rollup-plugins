@@ -12,6 +12,8 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
 
   const args = opts.args || [];
   const allowRestarts = opts.allowRestarts || false;
+  const { prefix } = opts;
+
   const forkOptions = opts.options || opts;
   delete (forkOptions as RollupRunOptions).args;
   delete (forkOptions as RollupRunOptions).allowRestarts;
@@ -47,6 +49,22 @@ export default function run(opts: RollupRunOptions = {}): Plugin {
       const forkBundle = (dir: string, entryFileName: string) => {
         if (proc) proc.kill();
         proc = fork(join(dir, entryFileName), args, forkOptions);
+
+        if (proc && prefix && 'stdout' in proc && 'stderr' in proc && proc.stdout && proc.stderr) {
+          proc.stdout.on('data', (buff) => {
+            const line = buff.toLocaleString();
+            const withPrefix = line.replaceAll(/\n(.)/g, `\n${prefix} $1`);
+            // eslint-disable-next-line no-console
+            console.info(`${prefix}`, withPrefix);
+          });
+          proc.stderr.on('data', (buff) => {
+            const line = buff.toLocaleString();
+
+            const withPrefix = line.replaceAll(/\n(.)/g, `\n${prefix} $1`);
+            // eslint-disable-next-line no-console
+            console.error(`${prefix}`, withPrefix);
+          });
+        }
       };
 
       const dir = outputOptions.dir || dirname(outputOptions.file!);
